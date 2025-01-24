@@ -3,66 +3,140 @@ name : mehual jodhani
 date : 2024/01/17
 file : animal.service.mock.js
 */
+
+// AnimalService constructor function to initialize the local storage if not already set
 function AnimalService() {
-    // if there is no entry for animals in local storage
+    // Check if 'animals' entry exists in local storage
     if (!localStorage.getItem('animals')) {
-        // https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage  
-        // create a new entry in local storage and put an empty array in it
-        localStorage.setItem('animals', JSON.stringify([]))
+        // If not, initialize it with an empty array
+        localStorage.setItem('animals', JSON.stringify([]));
     }    
 }
+
 /*
- *
+ * Retrieves the list of animals from local storage
  */
 AnimalService.prototype.getAnimals = function() {
-    // this will always be set, because we did it in the constructor
+    // Parse and return the stored animal list from local storage
     return JSON.parse(localStorage.getItem('animals'));
 }
+
 /*
- *
+ * Saves a new animal to local storage after checking for duplicates
  */
 AnimalService.prototype.saveAnimal = function(animal) {
-    // get a list of animals
+    // Get the current list of animals
     const animals = this.getAnimals();
-    // see if this animal already exists
+    
+    // Check if an animal with the same name already exists
     if (animals.find(a => a.name == animal.name)) {
-        // tell the caller we're not going to save this
+        // Throw an error to indicate duplicate entry
         throw new Error('An animal with that name already exists!');
     }
-    // if it doesn't, add it to the array
+
+    // Add the new animal to the list
     animals.push(animal);
-    // and save it in storage again
+    
+    // Update local storage with the new list
     localStorage.setItem('animals', JSON.stringify(animals));
-    // tell the caller all was well
+    
+    // Return success response
     return true;
 }
+
 /*
- *
+ * Placeholder method for finding an animal (not yet implemented)
  */
 AnimalService.prototype.findAnimal = function(animalName) {
-    return null;
+    return null;  // Returns null for now
 }
 
 /*
- *
+ * Placeholder method for updating an animal (not yet implemented)
  */
 AnimalService.prototype.updateAnimal = function(animal) {
-
-    return false;
+    return false;  // Returns false for now
 }
 
 /*
- *
+ * Deletes an animal from the local storage
  */
 AnimalService.prototype.deleteAnimal = function(animal) {
+    // Get the current list of animals
     const animals = this.getAnimals();
+    
+    // Find the index of the animal to be deleted
     const idx = animals.findIndex(a => a.name == animal.name);
+    
+    // If the animal is not found, throw an error
     if (idx === -1) {
         throw new Error('That animal does not exist!');
     }
+
+    // Remove the animal from the array
     animals.splice(idx, 1);
+    
+    // Update the local storage with the modified list
     localStorage.setItem('animals', JSON.stringify(animals));
+    
+    // Return success response
     return true;
 }
 
+// Create an instance of AnimalService for use throughout the application
 const animalService = new AnimalService();
+
+// Re-initialize the AnimalService constructor to prevent redundant storage checks
+function AnimalService() {
+    if (!localStorage.getItem('animals')) {
+        localStorage.setItem('animals', JSON.stringify([]));
+    }
+}
+
+/*
+ * Returns a list of animal objects mapped to the Animal class
+ */
+AnimalService.prototype.listAnimals = function() {
+    // Retrieve the animals from local storage and map to Animal instances
+    return JSON.parse(localStorage.getItem('animals')).map(animal => new Animal(animal));
+};
+
+/*
+ * Finds an animal by its unique ID
+ */
+AnimalService.prototype.findAnimal = function(id) {
+    // Get the list of animals
+    const animals = this.listAnimals();
+    
+    // Find the animal with the matching ID
+    const animal = animals.find(a => a.id === id);
+    
+    // Throw an error if the animal is not found
+    if (!animal) throw new Error("That animal doesn't exist!");
+    
+    return animal;
+};
+
+/*
+ * Creates a new animal after checking for duplicate names
+ */
+AnimalService.prototype.createAnimal = function(animal) {
+    // Get the list of animals
+    const animals = this.listAnimals();
+    
+    // Check if an animal with the same name already exists
+    if (animals.some(a => a.name === animal.name)) {
+        throw new Error('That animal already exists!');
+    }
+    
+    // Add the new animal to the list
+    animals.push(animal);
+    
+    // Update the local storage
+    localStorage.setItem('animals', JSON.stringify(animals));
+    
+    return true;
+};
+
+// Export an instance of AnimalService for use in other modules
+export default new AnimalService();
