@@ -1,80 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Animal</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</head>
-<body>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add/Update Animal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header class="d-flex justify-content-center py-3">
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="create.html" class="nav-link active">Add Animal</a></li>
+        <li class="nav-item"><a href="list.html" class="nav-link">Show Animals</a></li>
+        <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+      </ul>
+    </header>
 
-  <!-- Navigation Bar -->
-  <header class="d-flex justify-content-center py-3">
-    <ul class="nav nav-pills">
-      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-      <li class="nav-item"><a href="create.html" class="nav-link active">Add Animal</a></li>
-      <li class="nav-item"><a href="list.html" class="nav-link">Show Animals</a></li>
-      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-      <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-    </ul>
-  </header>
+    <!-- Animal Form -->
+    <main class="container mt-5">
+      <h2 id="form-title">Add Animal</h2>
+      <form id="animal-form">
+        <div class="form-group">
+          <label for="animal-name">Name</label>
+          <input type="text" id="animal-name" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="animal-breed">Breed</label>
+          <input type="text" id="animal-breed" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="animal-legs">Legs</label>
+          <input type="number" id="animal-legs" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="animal-eyes">Eyes</label>
+          <input type="number" id="animal-eyes" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="animal-sound">Sound</label>
+          <input type="text" id="animal-sound" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Animal</button>
+      </form>
+    </main>
 
-  <!-- Add Animal Form -->
-  <div class="container mt-5">
-    <h1>Add a New Animal</h1>
-    <form id="animalForm">
-      <div class="form-group">
-        <label for="animalName">Name</label>
-        <input type="text" class="form-control" id="animalName" required>
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
+      <div class="container">
+        <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
       </div>
-      <div class="form-group">
-        <label for="animalBreed">Breed</label>
-        <input type="text" class="form-control" id="animalBreed" required>
-      </div>
-      <div class="form-group">
-        <label for="animalLegs">Legs</label>
-        <input type="number" class="form-control" id="animalLegs" required>
-      </div>
-      <div class="form-group">
-        <label for="animalEyes">Eyes</label>
-        <input type="number" class="form-control" id="animalEyes" required>
-      </div>
-      <div class="form-group">
-        <label for="animalSound">Sound</label>
-        <input type="text" class="form-control" id="animalSound" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Add Animal</button>
-    </form>
-  </div>
+    </footer>
 
-  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
-    <div class="container">
-      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
-    </div>
-  </footer>
+    <script>
+      // Check if we are editing an existing animal
+      window.addEventListener('load', function () {
+        const animalToEdit = localStorage.getItem("animalToEdit");
+        
+        // If there is an animal to edit, load its details into the form
+        if (animalToEdit !== null) {
+          const animals = JSON.parse(localStorage.getItem("animals"));
+          const animal = animals[animalToEdit];
+          
+          // Populate form fields
+          document.getElementById("animal-name").value = animal.name;
+          document.getElementById("animal-breed").value = animal.breed;
+          document.getElementById("animal-legs").value = animal.legs;
+          document.getElementById("animal-eyes").value = animal.eyes;
+          document.getElementById("animal-sound").value = animal.sound;
+          document.getElementById("form-title").innerText = "Edit Animal";
+          document.getElementById("animal-form").setAttribute("data-index", animalToEdit);
+        }
+      });
 
-  <script>
-    // Add Animal functionality
-    document.getElementById("animalForm").addEventListener("submit", function(event) {
-      event.preventDefault();
+      // Save or update animal data in localStorage
+      document.getElementById("animal-form").addEventListener("submit", function (e) {
+        e.preventDefault();
 
-      const name = document.getElementById("animalName").value;
-      const breed = document.getElementById("animalBreed").value;
-      const legs = document.getElementById("animalLegs").value;
-      const eyes = document.getElementById("animalEyes").value;
-      const sound = document.getElementById("animalSound").value;
+        const animals = JSON.parse(localStorage.getItem("animals")) || [];
+        const animalIndex = this.getAttribute("data-index");
 
-      const animal = { name, breed, legs, eyes, sound };
-      const animals = JSON.parse(localStorage.getItem("animals")) || [];
-      animals.push(animal);
-      localStorage.setItem("animals", JSON.stringify(animals));
+        const newAnimal = {
+          name: document.getElementById("animal-name").value,
+          breed: document.getElementById("animal-breed").value,
+          legs: document.getElementById("animal-legs").value,
+          eyes: document.getElementById("animal-eyes").value,
+          sound: document.getElementById("animal-sound").value
+        };
 
-      // Reset form and show success message
-      document.getElementById("animalForm").reset();
-      alert("Animal added successfully!");
-    });
-  </script>
-</body>
+        if (animalIndex !== null) {
+          // Update existing animal
+          animals[animalIndex] = newAnimal;
+          localStorage.setItem("animals", JSON.stringify(animals));
+          alert("Animal updated successfully!");
+        } else {
+          // Add new animal
+          animals.push(newAnimal);
+          localStorage.setItem("animals", JSON.stringify(animals));
+          alert("Animal added successfully!");
+        }
+
+        // Clear form after save
+        document.getElementById("animal-form").reset();
+        localStorage.removeItem("animalToEdit");
+        window.location.href = "list.html";  // Redirect to the list page
+      });
+    </script>
+  </body>
 </html>

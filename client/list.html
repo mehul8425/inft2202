@@ -1,83 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Show Animals</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</head>
-<body>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Animals</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <header class="d-flex justify-content-center py-3">
+      <ul class="nav nav-pills">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="create.html" class="nav-link">Add Animal</a></li>
+        <li class="nav-item"><a href="list.html" class="nav-link active">Show Animals</a></li>
+        <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+      </ul>
+    </header>
 
-  <!-- Navigation Bar -->
-  <header class="d-flex justify-content-center py-3">
-    <ul class="nav nav-pills">
-      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-      <li class="nav-item"><a href="create.html" class="nav-link">Add Animal</a></li>
-      <li class="nav-item"><a href="list.html" class="nav-link active">Show Animals</a></li>
-      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-      <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-    </ul>
-  </header>
+    <!-- Show Animals -->
+    <main class="container mt-5">
+      <h2>Animals List</h2>
+      <div id="empty-message" class="alert alert-warning d-none">No animals available in local storage.</div>
+      
+      <table id="animals-list" class="table table-striped d-none">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Breed</th>
+            <th>Legs</th>
+            <th>Eyes</th>
+            <th>Sound</th>
+            <th>Controls</th>
+          </tr>
+        </thead>
+        <tbody id="animals-table-body"></tbody>
+      </table>
+    </main>
 
-  <!-- Show Animals Table -->
-  <div class="container mt-5">
-    <div id="empty-message" class="alert alert-warning d-none">
-      No animals found in local storage.
-    </div>
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
+      <div class="container">
+        <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
+      </div>
+    </footer>
 
-    <table id="animal-list" class="table table-striped d-none">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Breed</th>
-          <th>Legs</th>
-          <th>Eyes</th>
-          <th>Sound</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <script>
+      // Load animals from localStorage and display them
+      window.addEventListener('load', function () {
+        const animals = JSON.parse(localStorage.getItem("animals")) || [];
+        const tableBody = document.getElementById("animals-table-body");
 
-  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
-    <div class="container">
-      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
-    </div>
-  </footer>
+        if (animals.length === 0) {
+          document.getElementById("empty-message").classList.remove("d-none");
+        } else {
+          document.getElementById("animals-list").classList.remove("d-none");
+          animals.forEach((animal, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${animal.name}</td>
+              <td>${animal.breed}</td>
+              <td>${animal.legs}</td>
+              <td>${animal.eyes}</td>
+              <td>${animal.sound}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="editAnimal(${index})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteAnimal(${index})">Delete</button>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        }
+      });
 
-  <script>
-    window.addEventListener('load', function() {
-      const animals = JSON.parse(localStorage.getItem("animals")) || [];
-      const tableBody = document.querySelector("#animal-list tbody");
+      // Edit animal function
+      function editAnimal(index) {
+        const animals = JSON.parse(localStorage.getItem("animals"));
+        const animal = animals[index];
 
-      if (animals.length === 0) {
-        document.getElementById("empty-message").classList.remove("d-none");
-      } else {
-        document.getElementById("animal-list").classList.remove("d-none");
-        animals.forEach((animal, index) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${animal.name}</td>
-            <td>${animal.breed}</td>
-            <td>${animal.legs}</td>
-            <td>${animal.eyes}</td>
-            <td>${animal.sound}</td>
-            <td><button class="btn btn-danger btn-sm" onclick="deleteAnimal(${index})">Delete</button></td>
-          `;
-          tableBody.appendChild(row);
-        });
+        // Populate form fields with the animal's data for editing
+        if (confirm("Do you want to edit this animal?")) {
+          localStorage.setItem("animalToEdit", index);
+          window.location.href = "create.html";  // Navigate to the 'Add Animal' page
+        }
       }
-    });
 
-    function deleteAnimal(index) {
-      const animals = JSON.parse(localStorage.getItem("animals")) || [];
-      animals.splice(index, 1); // Remove the animal at the given index
-      localStorage.setItem("animals", JSON.stringify(animals));
-      window.location.reload(); // Reload the page to show updated list
-    }
-  </script>
-</body>
+      // Delete animal function
+      function deleteAnimal(index) {
+        const animals = JSON.parse(localStorage.getItem("animals"));
+        animals.splice(index, 1);
+        localStorage.setItem("animals", JSON.stringify(animals));
+
+        // Refresh the page to update the list
+        window.location.reload();
+      }
+    </script>
+  </body>
 </html>
