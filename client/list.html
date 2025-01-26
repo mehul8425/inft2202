@@ -1,50 +1,46 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>INFT 2202 - Show Animals</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <title>Show Animals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
-<body class="d-flex flex-column h-100">
+<body>
 
-  <!-- Taskbar -->
+  <!-- Navigation Bar -->
   <header class="d-flex justify-content-center py-3">
     <ul class="nav nav-pills">
       <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
       <li class="nav-item"><a href="create.html" class="nav-link">Add Animal</a></li>
-      <li class="nav-item"><a href="list.html" class="nav-link active" aria-current="page">Show Animals</a></li>
+      <li class="nav-item"><a href="list.html" class="nav-link active">Show Animals</a></li>
       <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
       <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
     </ul>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-shrink-0">
-    <div class="container mt-5">
-      <h2>Show Animals</h2>
-
-      <div id="empty-message" class="alert alert-warning d-none">
-        There are currently no animals in local storage.
-      </div>
-
-      <table id="animal-list" class="table table-striped d-none">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Breed</th>
-            <th>Legs</th>
-            <th>Eyes</th>
-            <th>Sound</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+  <!-- Show Animals Table -->
+  <div class="container mt-5">
+    <div id="empty-message" class="alert alert-warning d-none">
+      No animals found in local storage.
     </div>
-  </main>
+
+    <table id="animal-list" class="table table-striped d-none">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Breed</th>
+          <th>Legs</th>
+          <th>Eyes</th>
+          <th>Sound</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
     <div class="container">
@@ -69,7 +65,7 @@
             <td>${animal.legs}</td>
             <td>${animal.eyes}</td>
             <td>${animal.sound}</td>
-            <td><button class="btn btn-danger" onclick="deleteAnimal(${index})">Delete</button></td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteAnimal(${index})">Delete</button></td>
           `;
           tableBody.appendChild(row);
         });
@@ -78,9 +74,9 @@
 
     function deleteAnimal(index) {
       const animals = JSON.parse(localStorage.getItem("animals")) || [];
-      animals.splice(index, 1);
+      animals.splice(index, 1); // Remove the animal at the given index
       localStorage.setItem("animals", JSON.stringify(animals));
-      window.location.reload(); // Reload the page to update the list
+      window.location.reload(); // Reload the page to show updated list
     }
   </script>
 </body>
