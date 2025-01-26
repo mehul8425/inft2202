@@ -24,7 +24,7 @@
       <div class="container">
         <h1>Manage Animals</h1>
         <hr>
-        <form id="animal-form" method="POST">
+        <form id="animal-form">
           <div class="mb-3">
             <label for="name" class="form-label">Animal Name</label>
             <input type="text" class="form-control" id="name" name="name" required>
@@ -59,7 +59,6 @@
             <th>Legs</th>
             <th>Eyes</th>
             <th>Sound</th>
-            <th></th>
           </thead>
           <tbody></tbody>
         </table>
@@ -73,8 +72,9 @@
     </footer>
 
     <script>
+      // Prevent form submission and save the data to localStorage
       document.getElementById("animal-form").addEventListener("submit", function(event) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent form from submitting to a server
 
         const name = document.getElementById("name").value;
         const breed = document.getElementById("breed").value;
@@ -90,12 +90,14 @@
           sound
         };
 
-        // Save to localStorage
+        // Retrieve animals from localStorage or create a new array
         let animals = JSON.parse(localStorage.getItem("animals")) || [];
         animals.push(animal);
+        
+        // Save updated animals array to localStorage
         localStorage.setItem("animals", JSON.stringify(animals));
 
-        // Reset form
+        // Clear form after saving
         document.getElementById("animal-form").reset();
 
         alert("Animal saved successfully!");
