@@ -13,7 +13,7 @@
     <header class="d-flex justify-content-center py-3">
       <ul class="nav nav-pills">
         <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="animal.html" class="nav-link active" aria-current="page">Animal</a></li>
+        <li class="nav-item"><a href="create.html" class="nav-link active" aria-current="page">Add Animal</a></li>
         <li class="nav-item"><a href="list.html" class="nav-link">Show Animals</a></li>
         <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
         <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
@@ -71,5 +71,35 @@
         <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
       </div>
     </footer>
+
+    <script>
+      document.getElementById("animal-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const breed = document.getElementById("breed").value;
+        const legs = document.getElementById("legs").value;
+        const eyes = document.getElementById("eyes").value;
+        const sound = document.getElementById("sound").value;
+
+        const animal = {
+          name,
+          breed,
+          legs,
+          eyes,
+          sound
+        };
+
+        // Save to localStorage
+        let animals = JSON.parse(localStorage.getItem("animals")) || [];
+        animals.push(animal);
+        localStorage.setItem("animals", JSON.stringify(animals));
+
+        // Reset form
+        document.getElementById("animal-form").reset();
+
+        alert("Animal saved successfully!");
+      });
+    </script>
   </body>
 </html>

@@ -33,7 +33,6 @@
             <th>Legs</th>
             <th>Eyes</th>
             <th>Sound</th>
-            <th></th>
           </thead>
           <tbody></tbody>
         </table>
@@ -45,5 +44,29 @@
         <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
       </div>
     </footer>
+
+    <script>
+      window.addEventListener('load', function() {
+        const animals = JSON.parse(localStorage.getItem("animals")) || [];
+        const tableBody = document.querySelector("#animal-list tbody");
+
+        if (animals.length === 0) {
+          document.getElementById("empty-message").classList.remove("d-none");
+        } else {
+          document.getElementById("animal-list").classList.remove("d-none");
+          animals.forEach(animal => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${animal.name}</td>
+              <td>${animal.breed}</td>
+              <td>${animal.legs}</td>
+              <td>${animal.eyes}</td>
+              <td>${animal.sound}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        }
+      });
+    </script>
   </body>
 </html>
