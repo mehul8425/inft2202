@@ -1,63 +1,79 @@
-<!-- Create Animal Page -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>INFT 2202 - Add Animal</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+  <title>Add Animal</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </head>
 <body>
+
+  <!-- Navigation Bar -->
+  <header class="d-flex justify-content-center py-3">
+    <ul class="nav nav-pills">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="create.html" class="nav-link active">Add Animal</a></li>
+      <li class="nav-item"><a href="list.html" class="nav-link">Show Animals</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+      <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+    </ul>
+  </header>
+
+  <!-- Add Animal Form -->
   <div class="container mt-5">
-    <h2>Add Animal</h2>
+    <h1>Add a New Animal</h1>
     <form id="animalForm">
       <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="name" required>
+        <label for="animalName">Name</label>
+        <input type="text" class="form-control" id="animalName" required>
       </div>
       <div class="form-group">
-        <label for="breed">Breed</label>
-        <input type="text" class="form-control" id="breed" required>
+        <label for="animalBreed">Breed</label>
+        <input type="text" class="form-control" id="animalBreed" required>
       </div>
       <div class="form-group">
-        <label for="legs">Number of Legs</label>
-        <input type="number" class="form-control" id="legs" required>
+        <label for="animalLegs">Legs</label>
+        <input type="number" class="form-control" id="animalLegs" required>
       </div>
       <div class="form-group">
-        <label for="eyes">Number of Eyes</label>
-        <input type="number" class="form-control" id="eyes" required>
+        <label for="animalEyes">Eyes</label>
+        <input type="number" class="form-control" id="animalEyes" required>
       </div>
       <div class="form-group">
-        <label for="sound">Sound</label>
-        <input type="text" class="form-control" id="sound" required>
+        <label for="animalSound">Sound</label>
+        <input type="text" class="form-control" id="animalSound" required>
       </div>
-      <button type="submit" class="btn btn-primary">Save Animal</button>
+      <button type="submit" class="btn btn-primary">Add Animal</button>
     </form>
   </div>
 
-  <script>
-    document.getElementById('animalForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
+    <div class="container">
+      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
+    </div>
+  </footer>
 
-      const name = document.getElementById('name').value;
-      const breed = document.getElementById('breed').value;
-      const legs = document.getElementById('legs').value;
-      const eyes = document.getElementById('eyes').value;
-      const sound = document.getElementById('sound').value;
+  <script>
+    // Add Animal functionality
+    document.getElementById("animalForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("animalName").value;
+      const breed = document.getElementById("animalBreed").value;
+      const legs = document.getElementById("animalLegs").value;
+      const eyes = document.getElementById("animalEyes").value;
+      const sound = document.getElementById("animalSound").value;
 
       const animal = { name, breed, legs, eyes, sound };
-
-      // Get animals from localStorage
-      let animals = JSON.parse(localStorage.getItem("animals")) || [];
-
-      // Add new animal to the array
+      const animals = JSON.parse(localStorage.getItem("animals")) || [];
       animals.push(animal);
-
-      // Save updated list to localStorage
       localStorage.setItem("animals", JSON.stringify(animals));
 
-      // Redirect to the "Show Animals" page
-      window.location.href = "list.html";
+      // Reset form and show success message
+      document.getElementById("animalForm").reset();
+      alert("Animal added successfully!");
     });
   </script>
 </body>
