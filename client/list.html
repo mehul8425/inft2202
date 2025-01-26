@@ -1,34 +1,56 @@
-<!-- Show Animals Page -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>INFT 2202 - Show Animals</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
-  <div class="container mt-5">
-    <h2>Show Animals</h2>
+<body class="d-flex flex-column h-100">
 
-    <div id="empty-message" class="alert alert-warning d-none">
-      There are currently no animals in local storage.
+  <!-- Taskbar -->
+  <header class="d-flex justify-content-center py-3">
+    <ul class="nav nav-pills">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="create.html" class="nav-link">Add Animal</a></li>
+      <li class="nav-item"><a href="list.html" class="nav-link active" aria-current="page">Show Animals</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+      <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+    </ul>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-shrink-0">
+    <div class="container mt-5">
+      <h2>Show Animals</h2>
+
+      <div id="empty-message" class="alert alert-warning d-none">
+        There are currently no animals in local storage.
+      </div>
+
+      <table id="animal-list" class="table table-striped d-none">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Breed</th>
+            <th>Legs</th>
+            <th>Eyes</th>
+            <th>Sound</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
+  </main>
 
-    <table id="animal-list" class="table table-striped d-none">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Breed</th>
-          <th>Legs</th>
-          <th>Eyes</th>
-          <th>Sound</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
+    <div class="container">
+      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
+    </div>
+  </footer>
 
   <script>
     window.addEventListener('load', function() {
@@ -55,17 +77,10 @@
     });
 
     function deleteAnimal(index) {
-      // Get current list of animals
       const animals = JSON.parse(localStorage.getItem("animals")) || [];
-
-      // Remove the animal at the specified index
       animals.splice(index, 1);
-
-      // Update the localStorage
       localStorage.setItem("animals", JSON.stringify(animals));
-
-      // Reload the page to reflect changes
-      window.location.reload();
+      window.location.reload(); // Reload the page to update the list
     }
   </script>
 </body>
