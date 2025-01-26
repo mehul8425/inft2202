@@ -1,7 +1,7 @@
 /*
 name : mehual jodhani
 date : 2024/01/21
-file : delete.js
+file : submitAnimalForm.js
 */
 
 // Attach an event listener to handle the form submission when the 'submitAnimalForm' form is submitted
