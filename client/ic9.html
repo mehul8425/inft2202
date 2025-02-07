@@ -1,0 +1,45 @@
+<!-- 
+Name: Mehual Jodhani
+Date: 2024/01/22
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animal Listing</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container mt-5">
+    <h1>Animal List</h1>
+    
+    <button class="btn btn-primary" onclick="renderXhrPage()">Load with XHR</button>
+    <button class="btn btn-secondary" onclick="renderSyncPage()">Load with Fetch (Promises)</button>
+    <button class="btn btn-success" onclick="renderAsyncPage()">Load with Fetch (Async/Await)</button>
+
+    <div id="message-box" class="alert alert-info d-none">
+      No animals found in the search.
+    </div>
+
+    <table id="animals-list" class="table table-striped d-none">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Species</th>
+          <th>Age</th>
+        </tr>
+      </thead>
+      <tbody id="animalsTableBody">
+      </tbody>
+    </table>
+
+    <div id="paginationControls" class="mt-3">
+    </div>
+  </div>
+
+  <script type="module" src="src/client/app/animals/search.js"></script>
+  <script defer src="ice9.js"></script>
+</body>
+</html>
