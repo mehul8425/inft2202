@@ -3,8 +3,10 @@ name : mehual jodhani
 date : 2024/01/21
 file : create.js
 */
+
 import AnimalService from './animals/animal.Service.mock.js';
 import Animal from './animals/Animal.js';
+import { waitTho } from './utils.js'; // Import waitTho function
 
 // Log the current page to the console for debugging purposes
 console.log('We are on the add page');
@@ -20,6 +22,8 @@ async function submitAnimalForm(event) {
     
     // Get the form element from the event object
     const animalForm = event.target;  
+    const submitButton = document.getElementById('submit-btn'); // Assuming button has this ID
+    const spinner = document.getElementById('loading-spinner'); // Assuming spinner has this ID
     
     // Validate the form inputs
     const valid = validateAnimalForm(animalForm);
@@ -28,6 +32,13 @@ async function submitAnimalForm(event) {
     if (valid) {
         console.log('Form validation passed');
         
+        // Disable form fields and button
+        submitButton.disabled = true;
+        animalForm.querySelectorAll("input, textarea, select").forEach(input => input.disabled = true);
+        
+        // Show the spinner
+        spinner.style.display = "block";
+
         // Collect form data into a FormData object
         const formData = new FormData(animalForm);
         
@@ -54,6 +65,9 @@ async function submitAnimalForm(event) {
             // Reset the form after successful submission
             animalForm.reset();
             
+            // Wait 3 seconds before redirecting
+            await waitTho(3000);
+
             // Redirect to the animal list page
             window.location = './list.html';
         } catch (error) {
@@ -62,6 +76,13 @@ async function submitAnimalForm(event) {
             // Show an error message if saving fails
             eleNameError.classList.remove('d-none');
             eleNameError.textContent = "This animal already exists!";
+        } finally {
+            // Enable form fields and button again in case of error
+            submitButton.disabled = false;
+            animalForm.querySelectorAll("input, textarea, select").forEach(input => input.disabled = false);
+            
+            // Hide spinner
+            spinner.style.display = "none";
         }
     } else {
         console.log('Form validation failed');

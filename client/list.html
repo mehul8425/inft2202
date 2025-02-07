@@ -1,173 +1,87 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Animals</title>
-    <!-- Updated Bootstrap CSS version -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">  <!-- Changed to Bootstrap 5 -->
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>  <!-- Changed to Bootstrap 5 -->
-  </head>
-  <body>
-    <!-- Navigation Bar -->
-    <header class="d-flex justify-content-center py-3">
-      <ul class="nav nav-pills">
-        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-        <li class="nav-item"><a href="create.html" class="nav-link">Add Animal</a></li>
-        <li class="nav-item"><a href="list.html" class="nav-link active">Show Animals</a></li>
-        <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-        <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-      </ul>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Show Animals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <header class="d-flex justify-content-center py-3">
+    <ul class="nav nav-pills">
+      <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+      <li class="nav-item"><a href="create.html" class="nav-link">Add Animal</a></li>
+      <li class="nav-item"><a href="list.html" class="nav-link active">Show Animals</a></li>
+      <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+      <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+    </ul>
+  </header>
 
-    <!-- Show Animals -->
-    <main class="container mt-5">
-      <h2>Animals List</h2>
-      <!-- Display empty message when no animals are found -->
-      <div id="empty-message" class="alert alert-warning d-none">No animals available in local storage.</div>
-      
-      <!-- Animals Table -->
-      <table id="animals-list" class="table table-striped d-none">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Breed</th>
-            <th>Legs</th>
-            <th>Eyes</th>
-            <th>Sound</th>
-            <th>Controls</th>
-          </tr>
-        </thead>
-        <tbody id="animals-table-body"></tbody>
-      </table>
-
-      <!-- Pagination controls -->
-      <nav id="pagination" class="d-none">
-        <ul class="pagination justify-content-center">
-          <!-- Pagination buttons will be injected here by JavaScript -->
-        </ul>
-      </nav>
-    </main>
-
-    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
-      <div class="container">
-        <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
+  <!-- Show Animals -->
+  <main class="container mt-5">
+    <h2>Animals List</h2>
+    
+    <!-- Spinner (Initially Hidden) -->
+    <div id="loading-spinner" class="mt-3 text-center" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
       </div>
-    </footer>
+      <p>Loading animals... Please wait.</p>
+    </div>
 
-    <script>
-      window.addEventListener('load', function () {
-        const animals = JSON.parse(localStorage.getItem("animals")) || [];
-        const tableBody = document.getElementById("animals-table-body");
+    <!-- Display empty message when no animals are found -->
+    <div id="empty-message" class="alert alert-warning d-none">No animals available in local storage.</div>
 
-        // Check if animals exist in local storage
-        if (animals.length === 0) {
-          document.getElementById("empty-message").classList.remove("d-none");
-        } else {
-          document.getElementById("animals-list").classList.remove("d-none");
-          // Loop through and display each animal
-          animals.forEach((animal, index) => {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-              <td>${animal.name}</td>
-              <td>${animal.breed}</td>
-              <td>${animal.legs}</td>
-              <td>${animal.eyes}</td>
-              <td>${animal.sound}</td>
-              <td>
-                <button class="btn btn-warning btn-sm" onclick="editAnimal(${index})">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteAnimal(${index})">Delete</button>
-              </td>
-            `;
-            tableBody.appendChild(row);
-          });
+    <!-- Animals Table -->
+    <table id="animals-list" class="table table-striped d-none">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Breed</th>
+          <th>Legs</th>
+          <th>Eyes</th>
+          <th>Sound</th>
+          <th>Controls</th>
+        </tr>
+      </thead>
+      <tbody id="animals-table-body"></tbody>
+    </table>
+  </main>
 
-          // Add pagination if there are more than 5 animals
-          const perPage = 5;
-          const numPages = Math.ceil(animals.length / perPage);
-          const pagination = document.getElementById("pagination");
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
+    <div class="container">
+      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
+    </div>
+  </footer>
 
-          if (numPages > 1) {
-            pagination.classList.remove("d-none");
-            createPagination(numPages, animals, perPage);
-          }
-        }
-      });
+  <script>
+    async function loadAnimals() {
+      const spinner = document.getElementById("loading-spinner");
+      const emptyMessage = document.getElementById("empty-message");
+      const table = document.getElementById("animals-list");
+      const tableBody = document.getElementById("animals-table-body");
 
-      // Edit animal function
-      function editAnimal(index) {
-        const animals = JSON.parse(localStorage.getItem("animals"));
-        const animal = animals[index];
+      // Show spinner while loading
+      spinner.style.display = "block";
+      table.classList.add("d-none");
+      emptyMessage.classList.add("d-none");
 
-        // Populate form fields with the animal's data for editing
-        if (confirm("Do you want to edit this animal?")) {
-          localStorage.setItem("animalToEdit", index);
-          window.location.href = "create.html";  // Navigate to the 'Add Animal' page
-        }
-      }
+      // Wait 3 seconds before displaying animals
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Delete animal function
-      function deleteAnimal(index) {
-        const animals = JSON.parse(localStorage.getItem("animals"));
-        animals.splice(index, 1);
-        localStorage.setItem("animals", JSON.stringify(animals));
+      const animals = JSON.parse(localStorage.getItem("animals")) || [];
+      
+      spinner.style.display = "none"; // Hide spinner after loading
 
-        // Refresh the page to update the list
-        window.location.reload();
-      }
+      if (animals.length === 0) {
+        emptyMessage.classList.remove("d-none");
+      } else {
+        table.classList.remove("d-none");
+        tableBody.innerHTML = ''; // Clear existing rows
 
-      // Function to create pagination buttons
-      function createPagination(numPages, animals, perPage) {
-        const paginationContainer = document.querySelector("#pagination ul");
-        paginationContainer.innerHTML = '';  // Clear any existing pagination items
-
-        // Previous button
-        paginationContainer.innerHTML += `
-          <li class="page-item disabled" id="prev-btn">
-            <button class="page-link" onclick="changePage('prev')">Previous</button>
-          </li>
-        `;
-        
-        // Page number buttons
-        for (let i = 1; i <= numPages; i++) {
-          paginationContainer.innerHTML += `
-            <li class="page-item" id="page-${i}">
-              <button class="page-link" onclick="changePage(${i})">${i}</button>
-            </li>
-          `;
-        }
-
-        // Next button
-        paginationContainer.innerHTML += `
-          <li class="page-item" id="next-btn">
-            <button class="page-link" onclick="changePage('next')">Next</button>
-          </li>
-        `;
-      }
-
-      // Function to change pages
-      let currentPage = 1;
-      function changePage(page) {
-        const animals = JSON.parse(localStorage.getItem("animals"));
-        const perPage = 5;
-        const numPages = Math.ceil(animals.length / perPage);
-
-        if (page === 'prev' && currentPage > 1) {
-          currentPage--;
-        } else if (page === 'next' && currentPage < numPages) {
-          currentPage++;
-        } else if (typeof page === 'number') {
-          currentPage = page;
-        }
-
-        const startIndex = (currentPage - 1) * perPage;
-        const endIndex = currentPage * perPage;
-        const animalsToDisplay = animals.slice(startIndex, endIndex);
-
-        // Re-render the table
-        const tableBody = document.getElementById("animals-table-body");
-        tableBody.innerHTML = '';
-        animalsToDisplay.forEach((animal, index) => {
+        animals.forEach((animal, index) => {
           const row = document.createElement("tr");
           row.innerHTML = `
             <td>${animal.name}</td>
@@ -176,17 +90,43 @@
             <td>${animal.eyes}</td>
             <td>${animal.sound}</td>
             <td>
-              <button class="btn btn-warning btn-sm" onclick="editAnimal(${startIndex + index})">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteAnimal(${startIndex + index})">Delete</button>
+              <button class="btn btn-warning btn-sm" onclick="editAnimal(${index})">Edit</button>
+              <button class="btn btn-danger btn-sm delete-btn" onclick="deleteAnimal(${index})">Delete</button>
             </td>
           `;
           tableBody.appendChild(row);
         });
-
-        // Disable Previous/Next buttons based on the current page
-        document.getElementById("prev-btn").classList.toggle('disabled', currentPage === 1);
-        document.getElementById("next-btn").classList.toggle('disabled', currentPage === numPages);
       }
-    </script>
-  </body>
+    }
+
+    // Edit animal function
+    function editAnimal(index) {
+      localStorage.setItem("animalToEdit", index);
+      window.location.href = "create.html"; // Redirect to edit page
+    }
+
+    // Delete animal function with a 3-second delay
+    async function deleteAnimal(index) {
+      const animals = JSON.parse(localStorage.getItem("animals"));
+      const deleteButton = document.querySelectorAll(".delete-btn")[index];
+
+      // Disable button and show spinner inside button
+      deleteButton.disabled = true;
+      deleteButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Deleting...`;
+
+      // Wait 3 seconds before deleting
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Remove animal from local storage
+      animals.splice(index, 1);
+      localStorage.setItem("animals", JSON.stringify(animals));
+
+      // Refresh the page to update the list
+      window.location.reload();
+    }
+
+    // Load animals on page load
+    window.addEventListener('load', loadAnimals);
+  </script>
+</body>
 </html>
