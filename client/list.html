@@ -6,6 +6,7 @@
   <title>Show Animals</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="./list.js"></script> <!-- Ensure list.js is loaded -->
 </head>
 <body>
   <!-- Navigation Bar -->
@@ -32,7 +33,25 @@
     </div>
 
     <!-- Display empty message when no animals are found -->
-    <div id="empty-message" class="alert alert-warning d-none">No animals available in local storage.</div>
+    <div id="empty-message" class="alert alert-warning d-none">No animals available.</div>
+
+    <!-- Pagination Controls (Added for API Pagination) -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <label for="perPageSelect">Records per page:</label>
+        <select id="perPageSelect" class="form-select w-auto">
+          <option value="2">2</option>
+          <option value="5" selected>5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+      <div id="pagination">
+        <button id="prevPage" class="btn btn-secondary">Previous</button>
+        <span id="pageNumber">Page 1</span>
+        <button id="nextPage" class="btn btn-secondary">Next</button>
+      </div>
+    </div>
 
     <!-- Animals Table -->
     <table id="animals-list" class="table table-striped d-none">
@@ -52,7 +71,7 @@
 
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 mt-auto border-top">
     <div class="container">
-      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehul Jodhani</span>
+      <span class="mb-3 mb-md-0 text-body-secondary">© <span id="copyrightYear"></span> Mehual Jodhani</span>
     </div>
   </footer>
 
@@ -68,62 +87,83 @@
       table.classList.add("d-none");
       emptyMessage.classList.add("d-none");
 
-      // Wait 3 seconds before displaying animals
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Get API animals with pagination
+      const urlParams = new URLSearchParams(window.location.search);
+      let page = parseInt(urlParams.get("page")) || 1;
+      let perPage = parseInt(urlParams.get("perPage")) || 5;
 
-      const animals = JSON.parse(localStorage.getItem("animals")) || [];
-      
-      spinner.style.display = "none"; // Hide spinner after loading
-
-      if (animals.length === 0) {
-        emptyMessage.classList.remove("d-none");
-      } else {
-        table.classList.remove("d-none");
-        tableBody.innerHTML = ''; // Clear existing rows
-
-        animals.forEach((animal, index) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${animal.name}</td>
-            <td>${animal.breed}</td>
-            <td>${animal.legs}</td>
-            <td>${animal.eyes}</td>
-            <td>${animal.sound}</td>
-            <td>
-              <button class="btn btn-warning btn-sm" onclick="editAnimal(${index})">Edit</button>
-              <button class="btn btn-danger btn-sm delete-btn" onclick="deleteAnimal(${index})">Delete</button>
-            </td>
-          `;
-          tableBody.appendChild(row);
+      try {
+        const response = await fetch(`https://inft2202.opentech.durhamcollege.org/api/animals?page=${page}&perPage=${perPage}`, {
+          method: "GET",
+          headers: {
+            apikey: "YOUR_API_KEY_HERE",
+            "Content-Type": "application/json",
+          },
         });
+
+        if (!response.ok) throw new Error("Failed to fetch data");
+
+        const animals = await response.json();
+
+        spinner.style.display = "none"; // Hide spinner after loading
+
+        if (!animals.length) {
+          emptyMessage.classList.remove("d-none");
+        } else {
+          table.classList.remove("d-none");
+          tableBody.innerHTML = ''; // Clear existing rows
+
+          animals.forEach(animal => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${animal.name}</td>
+              <td>${animal.breed}</td>
+              <td>${animal.legs}</td>
+              <td>${animal.eyes}</td>
+              <td>${animal.sound}</td>
+              <td>
+                <a class="btn btn-warning btn-sm" href="create.html?id=${animal.id}">Edit</a>
+                <button class="btn btn-danger btn-sm delete-btn" onclick="deleteAnimal('${animal.id}')">Delete</button>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        }
+
+        // Update Pagination UI
+        document.getElementById("pageNumber").innerText = `Page ${page}`;
+        document.getElementById("prevPage").disabled = page === 1;
+        document.getElementById("prevPage").onclick = () => changePage(page - 1);
+        document.getElementById("nextPage").onclick = () => changePage(page + 1);
+      } catch (error) {
+        console.error("Error fetching animals:", error);
+        spinner.style.display = "none";
+        emptyMessage.innerHTML = "Error loading animals. Please try again.";
+        emptyMessage.classList.remove("d-none");
       }
     }
 
-    // Edit animal function
-    function editAnimal(index) {
-      localStorage.setItem("animalToEdit", index);
-      window.location.href = "create.html"; // Redirect to edit page
+    async function deleteAnimal(id) {
+      try {
+        await fetch(`https://inft2202.opentech.durhamcollege.org/api/animals/${id}`, {
+          method: "DELETE",
+          headers: { apikey: "YOUR_API_KEY_HERE" },
+        });
+        loadAnimals(); // Refresh without reloading
+      } catch (error) {
+        console.error("Failed to delete animal:", error);
+        alert("Could not delete. Try again.");
+      }
     }
 
-    // Delete animal function with a 3-second delay
-    async function deleteAnimal(index) {
-      const animals = JSON.parse(localStorage.getItem("animals"));
-      const deleteButton = document.querySelectorAll(".delete-btn")[index];
-
-      // Disable button and show spinner inside button
-      deleteButton.disabled = true;
-      deleteButton.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Deleting...`;
-
-      // Wait 3 seconds before deleting
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      // Remove animal from local storage
-      animals.splice(index, 1);
-      localStorage.setItem("animals", JSON.stringify(animals));
-
-      // Refresh the page to update the list
-      window.location.reload();
+    function changePage(newPage) {
+      const perPage = document.getElementById("perPageSelect").value;
+      window.location.search = `?page=${newPage}&perPage=${perPage}`;
     }
+
+    document.getElementById("perPageSelect").addEventListener("change", function() {
+      changePage(1);
+    });
 
     // Load animals on page load
     window.addEventListener('load', loadAnimals);
