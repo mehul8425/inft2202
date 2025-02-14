@@ -2,7 +2,7 @@
 name : Mehual Jodhani
 date : 2024/01/17
 file : list.js
-*/ 
+*/
 
 import * as animalService from "./animal.service.js";
 
@@ -10,11 +10,14 @@ console.log('we are on the list page');
 
 // Get table elements
 const eleEmpty = document.getElementById('empty-message');
-const eleTable = document.getElementById('animal-list');
-const tableBody = eleTable.querySelector("tbody");
+const eleTable = document.getElementById('animals-list');
+const tableBody = document.getElementById('animals-table-body');
 const spinner = document.getElementById('loading-spinner');
 const perPageSelect = document.getElementById("perPageSelect");
 const pagination = document.getElementById("pagination");
+const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
+const deleteError = document.getElementById("delete-error");
+let deleteAnimalId = null; // Store the ID of the animal to delete
 
 // Get URL parameters for pagination
 const urlParams = new URLSearchParams(window.location.search);
@@ -65,33 +68,42 @@ function drawAnimalTable(animals) {
         // Create button cell
         const eleBtnCell = row.insertCell();
         
-        // Delete button
+        // Delete button (Uses Bootstrap Modal)
         const eleBtnDelete = document.createElement('button');
         eleBtnDelete.classList.add('btn', 'btn-danger', 'mx-1');
         eleBtnDelete.innerHTML = `<i class="fa fa-trash"></i>`;
-        eleBtnDelete.addEventListener('click', () => onDeleteButtonClick(animal));
+        eleBtnDelete.setAttribute("data-id", animal.id);
+        eleBtnDelete.addEventListener('click', () => confirmDelete(animal.id));
 
-        // Edit button
+        // Edit button (Uses animal ID for editing)
         const eleBtnEdit = document.createElement('a');
         eleBtnEdit.classList.add('btn', 'btn-primary', 'mx-1');
         eleBtnEdit.innerHTML = `<i class="fa fa-user"></i>`;
-        eleBtnEdit.href = `./add.html?name=${animal.name}`;
+        eleBtnEdit.href = `./create.html?id=${animal.id}`; // Redirect to edit page with ID
 
         // Append buttons to cell
         eleBtnCell.append(eleBtnDelete, eleBtnEdit);
     }
 }
 
+// Function to open delete confirmation modal
+window.confirmDelete = function (id) {
+    deleteAnimalId = id;
+    deleteError.textContent = ""; // Clear any previous errors
+    deleteModal.show();
+};
+
 // Function to delete an animal
-async function onDeleteButtonClick(animal) {
+window.deleteAnimal = async function () {
     try {
-        await animalService.deleteAnimal(animal);
+        await animalService.deleteAnimal(deleteAnimalId);
+        deleteModal.hide();
         fetchAndRenderAnimals(); // Refresh without reloading
     } catch (error) {
         console.error("Failed to delete animal:", error);
-        alert("Failed to delete animal. Please try again.");
+        deleteError.textContent = "Failed to delete animal. Please try again.";
     }
-}
+};
 
 // Update Pagination UI
 function updatePagination() {
