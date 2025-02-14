@@ -5,7 +5,7 @@ file : animal.service.js
 */
 
 const API_BASE_URL = "https://inft2202.opentech.durhamcollege.org/api/animals";
-const API_KEY = "YOUR_API_KEY_HERE"; // Replace with your actual API key
+const API_KEY = "6813e6a5-77b4-4bdd-b47f-d3ffcd3c74aa" ; // 
 
 // Function to get all animals (from API or localStorage)
 export async function getAnimals(page = 1, perPage = 5) {
